@@ -14,7 +14,7 @@ const char *AP_PASSWORD = "88888888";
 Get your API key here:
 https://openweathermap.org/api
 */
-String openWeatherMapApiKey = "ab30134860307ce8c12fcf86eb710d18";
+String openWeatherMapApiKey = "XXXXXXXXXX";
 String city = "Burnaby";
 String countryCode = "Canada";
 
