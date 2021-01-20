@@ -8,6 +8,15 @@
 
 //SEE CONFIG.H for configuration options
 
+void blink(int times, int wait) {
+  for (int i = 0; i < times; i++)
+  {
+    digitalWrite(LED_BUILTIN, LOW);
+    delay(wait);
+    digitalWrite(LED_BUILTIN, HIGH);
+    delay(wait);
+  }
+}
 String httpGETRequest(const char *serverName)
 {
   HTTPClient http;
@@ -30,6 +39,7 @@ String httpGETRequest(const char *serverName)
   {
     Serial.print("Error code: ");
     Serial.println(httpResponseCode);
+    blink(5, 250);
   }
   // Free resources
   http.end();
@@ -39,6 +49,8 @@ String httpGETRequest(const char *serverName)
 
 void setup()
 {
+  pinMode(LED_BUILTIN, OUTPUT);
+
   WiFi.mode(WIFI_STA); // explicitly set mode, esp defaults to STA+AP
 
   // put your setup code here, to run once:
@@ -46,6 +58,7 @@ void setup()
   Serial.setDebugOutput(true);
   delay(3000);
   Serial.println("\n Starting");
+  blink(2, 250);
   // WiFi.mode(WiFi_STA); // it is a good practice to make sure your code sets wifi mode how you want it.
 
   //WiFiManager, Local intialization. Once its business is done, there is no need to keep it around
@@ -66,14 +79,19 @@ void setup()
 
   if (!res)
   {
-    Serial.println("Failed to connect");
+    Serial.println("Failed to connect to Wifi");
+    //delay 10 seconds
+    blink(4, 1000);
+    // should we just restart?
     // ESP.restart();
     return;
   }
   else
   {
     //if you get here you have connected to the WiFi
-    Serial.println("connected...yeey :)");
+    Serial.println("Connected to Wifi");
+    blink(3, 500);
+
   }
 }
 
@@ -141,18 +159,20 @@ void loop()
 
   Serial.print("effect:");
   Serial.println(effect);
-  String wledPath = WLED_HOST + "/win&PL=";
+  String wledPath = WLED_HOST + "/win&PL="; //the lack of a ? is not a type-o.
   String wledUri = wledPath + effect;
 
   Serial.print("wledUri:");
   Serial.println(wledUri);
-  Serial.println("----------------------");
 
   HTTPClient http;
   http.begin(wledUri.c_str());
   int httpResponseCode = http.GET();
   http.end();
 
-  //1000 (1 second) * 60 (1 minute) * 60 (1 hour)
+  Serial.print("WLED response:");
+  Serial.println(httpResponseCode);
+  Serial.println("----------------------");
+
   delay(updateDelay);
 }

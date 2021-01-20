@@ -18,8 +18,7 @@ String openWeatherMapApiKey = "XXXXXXXXXX";
 String city = "Burnaby";
 String countryCode = "Canada";
 
-/*
-WLED DEVICE AND WHICH EFFECTS TO CALL  {WLED_HOST}/win&PL={EFFECT}
+/* WLED DEVICE AND WHICH EFFECTS TO CALL  {WLED_HOST}/win&PL={EFFECT}
 
 Full list of conditions here:
 https://openweathermap.org/weather-conditions
@@ -35,7 +34,9 @@ const int WLED_ADVANCED = 1;
 String WLED_HOST = "http://10.0.0.96";
 int WLED_MODE = WLED_SIMPLE;
 
-/*ONLY considering changing if you are using WLED_MODE = WLED_SIMPLE*/
+/*EFFECTS
+
+ONLY considering changing if you are using WLED_MODE = WLED_SIMPLE*/
 int thunderstormEffect = 6;
 int drizzleEffect = 3;
 int rainEffect = 4;
