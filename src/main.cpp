@@ -13,6 +13,17 @@ String openWeatherMapApiKey = "ab30134860307ce8c12fcf86eb710d18";
 String city = "Burnaby";
 String countryCode = "Canada";
 
+//String lat = "49.2510329";
+//String lon = "-122.9831989";
+
+String WLED_HOST = "http://10.0.0.96";
+int thunderstormEffect = 6;
+int drizzleEffect = 3;
+int rainEffect = 4;
+int snowEffect = 5;
+int atmosphereEffect = 7;
+int clearEffect = 7;
+int cloudsEffect = 8;
 
 String httpGETRequest(const char *serverName)
 {
@@ -42,7 +53,6 @@ String httpGETRequest(const char *serverName)
 
   return payload;
 }
-
 
 void setup()
 {
@@ -93,6 +103,7 @@ void setup()
 }
 
 String jsonBuffer;
+String wledBuffer;
 
 void loop()
 {
@@ -101,31 +112,72 @@ void loop()
 
   Serial.println(timeClient.getFormattedTime());
 
-  String serverPath = "http://api.openweathermap.org/data/2.5/weather?q=" + city + "," + countryCode + "&APPID=" + openWeatherMapApiKey;
+  String serverPath = "http://api.openweathermap.org/data/2.5/weather?units=metric&q=" + city + "," + countryCode + "&APPID=" + openWeatherMapApiKey;
+  String wledPath = WLED_HOST + "/win&PL=";
+  //String serverPath = "https://api.openweathermap.org/data/2.5/onecall?lat=" + lat + "&lon=" + lon + "&appid=" + openWeatherMapApiKey;
 
   jsonBuffer = httpGETRequest(serverPath.c_str());
+  Serial.println(serverPath);
   Serial.println(jsonBuffer);
-  JSONVar myObject = JSON.parse(jsonBuffer);
+  JSONVar rawWeather = JSON.parse(jsonBuffer);
 
   // JSON.typeof(jsonVar) can be used to get the type of the var
-  if (JSON.typeof(myObject) == "undefined")
+  if (JSON.typeof(rawWeather) == "undefined")
   {
     Serial.println("Parsing input failed!");
     return;
   }
 
   Serial.print("JSON object = ");
-  Serial.println(myObject);
+  Serial.println(rawWeather);
   Serial.print("Temperature: ");
-  Serial.println(myObject["main"]["temp"]);
-  Serial.print("Pressure: ");
-  Serial.println(myObject["main"]["pressure"]);
-  Serial.print("Humidity: ");
-  Serial.println(myObject["main"]["humidity"]);
-  Serial.print("Wind Speed: ");
-  Serial.println(myObject["wind"]["speed"]);
+  double temp = (double)rawWeather["main"]["temp"];
+  Serial.println(temp);
 
-  delay(10000);
+  Serial.println("-----weather-----");
+
+  int count = rawWeather["weather"].length();
+  int weatherId = 800;
+  String weatherMain = "Clear";
+
+  if (count > 0)
+  {
+    weatherId = rawWeather["weather"][0]["id"];
+    weatherMain = rawWeather["weather"][0]["main"];
+    Serial.print("weatherId:");
+    Serial.println(weatherId);
+    Serial.print("weatherMain:");
+    Serial.println(weatherMain);
+  }
+  Serial.println("----------------------");
+
+  int effect = clearEffect; //800
+
+  if (weatherId >= 200 && weatherId < 300)
+    effect = thunderstormEffect;
+  if (weatherId >= 300 && weatherId < 400)
+    effect = drizzleEffect;
+  if (weatherId >= 500 && weatherId < 600)
+    effect = rainEffect;
+  if (weatherId >= 600 && weatherId < 700)
+    effect = snowEffect;
+  if (weatherId >= 700 && weatherId < 800)
+    effect = atmosphereEffect;
+  if (weatherId >= 801 && weatherId < 900)
+    effect = cloudsEffect;
+
+  Serial.print("effect:");
+  Serial.println(effect);
+  String wledUri = wledPath + effect;
+
+  Serial.print("wledUri:");
+  Serial.println(wledUri);
+
+  HTTPClient http;
+  http.begin(wledUri.c_str());
+  int httpResponseCode = http.GET();
+  http.end();
+
   //1000 (1 second) * 60 (1 minute) * 60 (1 hour)
-  //delay(1000 * 60 * 60);
+  delay(1000 * 60 * 60);
 }
