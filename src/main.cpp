@@ -82,6 +82,9 @@ String wledBuffer;
 
 void loop()
 {
+  Serial.print("OpenWeather API Key: ");
+  Serial.println(openWeatherMapApiKey);
+
   String serverPath = "http://api.openweathermap.org/data/2.5/weather?units=metric&q=" + city + "," + countryCode + "&APPID=" + openWeatherMapApiKey;
 
   jsonBuffer = httpGETRequest(serverPath.c_str());
@@ -93,17 +96,10 @@ void loop()
   if (JSON.typeof(rawWeather) == "undefined")
   {
     Serial.println("Parsing input failed!");
+    delay(updateDelay);
     return;
   }
-
-  Serial.print("JSON object = ");
-  Serial.println(rawWeather);
-  Serial.print("Temperature: ");
-  double temp = (double)rawWeather["main"]["temp"];
-  Serial.println(temp);
-
   Serial.println("-----weather-----");
-
   int count = rawWeather["weather"].length();
   int weatherId = 800;
   String weatherMain = "Clear";
@@ -117,12 +113,16 @@ void loop()
     Serial.print("weatherMain:");
     Serial.println(weatherMain);
   }
+  Serial.println("----------------------");
+  Serial.println("-----WLED-----");
 
   int effect = weatherId; //800
 
   //only mutate if we are in WLED_SIMPLE mode
   if (WLED_MODE == WLED_SIMPLE)
   {
+    Serial.println("WLED_SIMPLE is in use, mapping effect");
+
     if (weatherId >= 200 && weatherId < 300)
       effect = thunderstormEffect;
     if (weatherId >= 300 && weatherId < 400)
