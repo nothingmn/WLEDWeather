@@ -34,6 +34,13 @@ int atmosphereEffect = 7;
 int clearEffect = 7;
 int cloudsEffect = 8;
 
+/* DELAY BETWEEN UPDATES
+  1000 (1 second) * 60 (1 minute) * 60 (1 hour)
+  Careful not to hit limits on the weather API, once an hour seems reasonable
+*/
+int updateDelay = 1000 * 60 * 60;
+
+
 String httpGETRequest(const char *serverName)
 {
   HTTPClient http;
@@ -150,7 +157,6 @@ void loop()
     Serial.print("weatherMain:");
     Serial.println(weatherMain);
   }
-  Serial.println("----------------------");
 
   int effect = clearEffect; //800
 
@@ -174,6 +180,7 @@ void loop()
 
   Serial.print("wledUri:");
   Serial.println(wledUri);
+  Serial.println("----------------------");
 
   HTTPClient http;
   http.begin(wledUri.c_str());
@@ -181,5 +188,5 @@ void loop()
   http.end();
 
   //1000 (1 second) * 60 (1 minute) * 60 (1 hour)
-  delay(1000 * 60 * 60);
+  delay(updateDelay);
 }
