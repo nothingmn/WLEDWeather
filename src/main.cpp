@@ -8,14 +8,23 @@
 
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP);
+/* NTP Network Time
+Set offset time in seconds to adjust for your timezone, for example:
+GMT +1 = 3600
+GMT +8 = 28800
+GMT -1 = -3600
+GMT -8 = -28800
+GMT 0 = 0
+*/
+int timeZoneOffset = -28800;
+
+/* OPEN WEATHER */
 String openWeatherMapApiKey = "ab30134860307ce8c12fcf86eb710d18";
-// Replace with your country code and city
 String city = "Burnaby";
 String countryCode = "Canada";
 
-//String lat = "49.2510329";
-//String lon = "-122.9831989";
 
+/* WLED DEVICE AND WHICH EFFECTS TO CALL  {WLED_HOST}/win&PL={EFFECT} */
 String WLED_HOST = "http://10.0.0.96";
 int thunderstormEffect = 6;
 int drizzleEffect = 3;
@@ -93,13 +102,7 @@ void setup()
     Serial.println("connected...yeey :)");
   }
   timeClient.begin();
-  // Set offset time in seconds to adjust for your timezone, for example:
-  // GMT +1 = 3600
-  // GMT +8 = 28800
-  // GMT -1 = -3600
-  // GMT -8 = -28800
-  // GMT 0 = 0
-  timeClient.setTimeOffset(-28800);
+  timeClient.setTimeOffset(timeZoneOffset);
 }
 
 String jsonBuffer;
@@ -113,8 +116,6 @@ void loop()
   Serial.println(timeClient.getFormattedTime());
 
   String serverPath = "http://api.openweathermap.org/data/2.5/weather?units=metric&q=" + city + "," + countryCode + "&APPID=" + openWeatherMapApiKey;
-  String wledPath = WLED_HOST + "/win&PL=";
-  //String serverPath = "https://api.openweathermap.org/data/2.5/onecall?lat=" + lat + "&lon=" + lon + "&appid=" + openWeatherMapApiKey;
 
   jsonBuffer = httpGETRequest(serverPath.c_str());
   Serial.println(serverPath);
@@ -168,6 +169,7 @@ void loop()
 
   Serial.print("effect:");
   Serial.println(effect);
+  String wledPath = WLED_HOST + "/win&PL=";
   String wledUri = wledPath + effect;
 
   Serial.print("wledUri:");
