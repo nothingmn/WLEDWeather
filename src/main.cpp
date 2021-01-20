@@ -4,33 +4,9 @@
 #include <NTPClient.h>
 #include <WiFiClient.h>
 #include <WiFiManager.h> // https://github.com/tzapu/WiFiManager
+#include "./config.h"
 
-/* WIFI DEFAULTS  http://192.168.4.1  */
-const char* AP_NAME = "WledWeather";
-const char* AP_PASSWORD = "88888888";
-
-/* OPEN WEATHER */
-String openWeatherMapApiKey = "XXXXXXXX";
-String city = "Burnaby";
-String countryCode = "Canada";
-
-
-/* WLED DEVICE AND WHICH EFFECTS TO CALL  {WLED_HOST}/win&PL={EFFECT} */
-String WLED_HOST = "http://10.0.0.96";
-int thunderstormEffect = 6;
-int drizzleEffect = 3;
-int rainEffect = 4;
-int snowEffect = 5;
-int atmosphereEffect = 7;
-int clearEffect = 7;
-int cloudsEffect = 8;
-
-/* DELAY BETWEEN UPDATES
-  1000 (1 second) * 60 (1 minute) * 60 (1 hour)
-  Careful not to hit limits on the weather API, once an hour seems reasonable
-*/
-int updateDelay = 1000 * 60 * 60;
-
+//SEE CONFIG.H for configuration options
 
 String httpGETRequest(const char *serverName)
 {
@@ -142,20 +118,26 @@ void loop()
     Serial.println(weatherMain);
   }
 
-  int effect = clearEffect; //800
+  int effect = weatherId; //800
 
-  if (weatherId >= 200 && weatherId < 300)
-    effect = thunderstormEffect;
-  if (weatherId >= 300 && weatherId < 400)
-    effect = drizzleEffect;
-  if (weatherId >= 500 && weatherId < 600)
-    effect = rainEffect;
-  if (weatherId >= 600 && weatherId < 700)
-    effect = snowEffect;
-  if (weatherId >= 700 && weatherId < 800)
-    effect = atmosphereEffect;
-  if (weatherId >= 801 && weatherId < 900)
-    effect = cloudsEffect;
+  //only mutate if we are in WLED_SIMPLE mode
+  if (WLED_MODE == WLED_SIMPLE)
+  {
+    if (weatherId >= 200 && weatherId < 300)
+      effect = thunderstormEffect;
+    if (weatherId >= 300 && weatherId < 400)
+      effect = drizzleEffect;
+    if (weatherId >= 500 && weatherId < 600)
+      effect = rainEffect;
+    if (weatherId >= 600 && weatherId < 700)
+      effect = snowEffect;
+    if (weatherId >= 700 && weatherId < 800)
+      effect = atmosphereEffect;
+    if (weatherId == 800)
+      effect = clearEffect;
+    if (weatherId >= 801 && weatherId < 900)
+      effect = cloudsEffect;
+  }
 
   Serial.print("effect:");
   Serial.println(effect);
