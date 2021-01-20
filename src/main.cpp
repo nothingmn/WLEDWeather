@@ -4,22 +4,13 @@
 #include <NTPClient.h>
 #include <WiFiClient.h>
 #include <WiFiManager.h> // https://github.com/tzapu/WiFiManager
-#include <WiFiUdp.h>
 
-WiFiUDP ntpUDP;
-NTPClient timeClient(ntpUDP);
-/* NTP Network Time
-Set offset time in seconds to adjust for your timezone, for example:
-GMT +1 = 3600
-GMT +8 = 28800
-GMT -1 = -3600
-GMT -8 = -28800
-GMT 0 = 0
-*/
-int timeZoneOffset = -28800;
+/* WIFI DEFAULTS  http://192.168.4.1  */
+const char* AP_NAME = "WledWeather";
+const char* AP_PASSWORD = "88888888";
 
 /* OPEN WEATHER */
-String openWeatherMapApiKey = "ab30134860307ce8c12fcf86eb710d18";
+String openWeatherMapApiKey = "XXXXXXXX";
 String city = "Burnaby";
 String countryCode = "Canada";
 
@@ -95,7 +86,7 @@ void setup()
   bool res;
   // res = wm.autoConnect(); // auto generated AP name from chipid
   // res = wm.autoConnect("AutoConnectAP"); // anonymous ap
-  res = wm.autoConnect("Cloudy", "88888888"); // password protected ap
+  res = wm.autoConnect(AP_NAME, AP_PASSWORD); // password protected ap
 
   if (!res)
   {
@@ -108,8 +99,6 @@ void setup()
     //if you get here you have connected to the WiFi
     Serial.println("connected...yeey :)");
   }
-  timeClient.begin();
-  timeClient.setTimeOffset(timeZoneOffset);
 }
 
 String jsonBuffer;
@@ -117,11 +106,6 @@ String wledBuffer;
 
 void loop()
 {
-  // put your main code here, to run repeatedly:
-  timeClient.update();
-
-  Serial.println(timeClient.getFormattedTime());
-
   String serverPath = "http://api.openweathermap.org/data/2.5/weather?units=metric&q=" + city + "," + countryCode + "&APPID=" + openWeatherMapApiKey;
 
   jsonBuffer = httpGETRequest(serverPath.c_str());
