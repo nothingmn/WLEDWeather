@@ -14,7 +14,7 @@ const char *AP_PASSWORD = "88888888";
 Get your API key here:
 https://openweathermap.org/api
 */
-String openWeatherMapApiKey = "XXXXXXXXXX";
+String openWeatherMapApiKey = "xxxxxxxxxxxxxxxxxxxxxxxxxx";
 String city = "Burnaby";
 String countryCode = "Canada";
 
@@ -31,7 +31,7 @@ WLED_ADVANCED means we will just send the weather ID value over
 const int WLED_SIMPLE = 0;
 const int WLED_ADVANCED = 1;
 
-String WLED_HOST = "http://10.0.0.96";
+String WLED_HOST = "http://10.0.0.98";
 int WLED_MODE = WLED_SIMPLE;
 
 /*EFFECTS
@@ -41,12 +41,16 @@ int thunderstormEffect = 6;
 int drizzleEffect = 3;
 int rainEffect = 4;
 int snowEffect = 5;
-int atmosphereEffect = 7;
+int atmosphereEffect = 9;
 int clearEffect = 7;
 int cloudsEffect = 8;
 
 /* DELAY BETWEEN UPDATES
-  1000 (1 second) * 60 (1 minute) * 60 (1 hour)
-  Careful not to hit limits on the weather API, once an hour seems reasonable
+  1000 (1 second) * 60 (1 minute) * 5 (5 minutes)
+  Careful not to hit limits on the weather API, once every 5 minutes seems good enough
+  https://openweathermap.org/price
+  Current limits for the free tier:
+  60 calls/minute
+  1,000,000 calls/month
 */
-int updateDelay = 1000 * 60 * 60;
+int updateDelay = 1000 * 60 * 5;
